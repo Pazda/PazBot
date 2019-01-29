@@ -7,21 +7,30 @@ import asyncio
 from tweetMaker import runTrain
 import os, sys
 
-fout = open( ".\print_data.txt", "w" )
-newF = open( ".\print_data.txt", "r" )
-fout.truncate(0)
-
+startup_extensions = [ "cogs.games"]
 TOKEN = ''
-
 bot = commands.Bot( command_prefix = '!' )
-
 generatorInUse = False
+
+#Load extensions
+@bot.event
+@asyncio.coroutine
+def on_ready():
+	for extension in startup_extensions:
+		try:
+			bot.load_extension( extension )
+			print( "Successfully loaded " + str(extension) + "!" )
+		except Exception as e:
+			print( "Extension load failed: " + str(extension) + "." )
 
 #NN command
 @bot.command(pass_context=True)
 @asyncio.coroutine
 def twitNN( ctx, *args ):
-
+	
+	if ctx.message.author.name != "Pazda":
+		yield from bot.send_message( ctx.message.channel, "Only Pazda can use this for now." )
+		return
 	#Just don't do anything if it's already in use.. small scale application anyway
 	global generatorInUse
 	if generatorInUse:
