@@ -74,7 +74,7 @@ def twitNN( ctx, *args ):
 
 #Reuse existing model
 #TODO: User checks; documentation for user
-@bot.command(pass_context=True)
+@bot.command(pass_context=True, description="Generate NN tweets. !twitNNR <tweets to generate (<10)> <temperature (<4.0)>")
 @asyncio.coroutine
 def twitNNR( ctx, *args ):
 	"""Anyone can use the trained model to generate tweets. """
