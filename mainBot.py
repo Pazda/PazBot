@@ -7,7 +7,7 @@ import asyncio
 from tweetMaker import runTrain
 import os, sys
 
-startup_extensions = [ "cogs.games"]
+startup_extensions = [ "cogs.games", "cogs.rude" ]
 TOKEN = ''
 bot = commands.Bot( command_prefix = '!' )
 generatorInUse = False
@@ -27,7 +27,7 @@ def on_ready():
 @bot.command(pass_context=True)
 @asyncio.coroutine
 def twitNN( ctx, *args ):
-	
+	"""Trains a neural network. Only usable by Pazda for now."""
 	if ctx.message.author.name != "Pazda":
 		yield from bot.send_message( ctx.message.channel, "Only Pazda can use this for now." )
 		return
@@ -77,17 +77,31 @@ def twitNN( ctx, *args ):
 @bot.command(pass_context=True)
 @asyncio.coroutine
 def twitNNR( ctx, *args ):
+	"""Anyone can use the trained model to generate tweets. """
+	
+	wrongFormat = "Improper format: !twitNNR <tweets to generate (<10)> <temperature (<4.0)>"
+	#Formatting
+	try:
+		genAmount = int( args[0] )
+		temp = float( args[1] )
+	except IndexError:
+		yield from bot.send_message( ctx.message.channel, wrongFormat )
+		return
+	except ValueError:
+		yield from bot.send_message( ctx.message.channel, wrongFormat )
+		return
+	if len(args) is not 2 or genAmount > 10 or genAmount < 1 or temp > 4.0 or temp < 0.1:
+		yield from bot.send_message( ctx.message.channel, wrongFormat )
+		return
+	
 	retVal = yield from runTrain( False, 0, "", int(args[0]), float(args[1]), 0 )
 	#If it's empty, we can't sned it, so send a notice instead
-	#yield from bot.send_message( ctx.message.channel, "[-------Your new tweets-------]" )
 	printStr = ""
 	printStr = printStr + "[-------Your new tweets-------]\n\n"
 	for x in range( int(args[0]) ):
 		if retVal[x] == '':
 			retVal[x] = 'Learner notice: Empty tweet.'
-		#yield from bot.send_message( ctx.message.channel, retVal[ x ] )
 		printStr = printStr + retVal[x] + "\n\n"
-	#yield from bot.send_message( ctx.message.channel, "[-----------------------------]" )
 	printStr = printStr + "[-------------------------]"
 	yield from bot.send_message( ctx.message.channel, printStr )
 

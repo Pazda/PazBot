@@ -7,14 +7,16 @@ from random import randint
 rouletteStarted, triviaStarted = False, False
 bulletPos, chamberPos, triviaQuestion = 0, 0, 0
 questions = [
-"What's 2+2?",
-"What's 4*3?",
-"What's 5-2?"
+"What do you cancel to get a boost grab in Smash Ultimate?",
+"Who was the first Smash 4 DLC character?",
+"What language is this bot coded in?",
+"Where is this bot's creator from?"
 ]
 answers = [
-"4",
-"12",
-"3"
+"roll",
+"mewtwo",
+"python",
+"belgium"
 ]
 
 class Games():
@@ -30,6 +32,7 @@ class Games():
 	@commands.command(pass_context=True)
 	@asyncio.coroutine
 	def trivia( self, ctx, *args ):
+		"""Starts a game of trivia!"""
 		#Ensure no duplicate trivia games
 		global triviaStarted
 		if triviaStarted:
@@ -56,6 +59,7 @@ class Games():
 	@commands.command(pass_context=True)
 	@asyncio.coroutine
 	def roulette( self, ctx, *args ):
+		"""Starts a game of Russian roulette!"""
 		global rouletteStarted, chamberPos, bulletPos
 		#Initialize game
 		if not rouletteStarted:
