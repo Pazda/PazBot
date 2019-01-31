@@ -4,19 +4,27 @@ from discord.ext import commands
 import asyncio
 from random import randint, choice
 
+finp = open( "trivia.txt", "r" )
+
 rouletteStarted, triviaStarted = {}, {}
 bulletPos, chamberPos, triviaQuestion = 0, 0, 0
-questions = {
-"What do you cancel to get a boost grab in Smash Ultimate?":"roll",
-"Who was the first Smash 4 DLC character?":"mewtwo",
-"What language is this bot coded in?":"python",
-"Where is this bot's creator from?":"belgium",
-"What is Mario and Luigi's last name?":"mario"
-}
+questions = eval( finp.read() )
+finp.close()
 
 class Games():
 	def __init__(self, bot):
 		self.bot = bot
+		
+	#[------Spin the Bottle-----]
+	@commands.command(pass_context=True)
+	@asyncio.coroutine
+	def spin( self, ctx, *args ):
+		"""Spin the bottle :flushed:"""
+		potentials = []
+		for user in ctx.message.server.members:
+			if user.status != discord.Status.offline:
+				potentials.append( user.name )
+		yield from self.bot.send_message( ctx.message.channel, ctx.message.author.name + " has to kiss " + choice( potentials ) + "! :kiss:" )
 		
 	#[-----Trivia-----]
 	#Checking for answer
@@ -44,7 +52,7 @@ class Games():
 		yield from self.bot.send_message( ctx.message.channel, "[TRIVIA] " + triviaQuestion )
 		
 		#Wait for answer
-		message = yield from self.bot.wait_for_message( check=self.check_answer, timeout=13 )
+		message = yield from self.bot.wait_for_message( check=self.check_answer, timeout=18 )
 		if message is None:
 			yield from self.bot.send_message( ctx.message.channel, "[TRIVIA] Nobody got the question right." )
 		else:
