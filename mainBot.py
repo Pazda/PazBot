@@ -7,7 +7,7 @@ import asyncio
 from tweetMaker import runTrain
 import os, sys
 
-startup_extensions = [ "cogs.games", "cogs.rude" ]
+startup_extensions = [ "cogs.games" ]
 TOKEN = ''
 bot = commands.Bot( command_prefix = '!' )
 generatorInUse = False
@@ -21,10 +21,10 @@ def on_ready():
 			bot.load_extension( extension )
 			print( "Successfully loaded " + str(extension) + "!" )
 		except Exception as e:
-			print( "Extension load failed: " + str(extension) + "." )
+			print( "Extension load failed: " + str(extension) + ".\nMessage: " + str(e) )
 
 #NN command
-@bot.command(pass_context=True)
+@bot.command(pass_context=True,description="!twitNN <username> <max tweets (<3000)> <number of tweets to generate (<20)> <temperature (<4.0)> <epochs to train (<30)>")
 @asyncio.coroutine
 def twitNN( ctx, *args ):
 	"""Trains a neural network. Only usable by Pazda for now."""
@@ -73,8 +73,7 @@ def twitNN( ctx, *args ):
 	generatorInUse = False
 
 #Reuse existing model
-#TODO: User checks; documentation for user
-@bot.command(pass_context=True, description="Generate NN tweets. !twitNNR <tweets to generate (<10)> <temperature (<4.0)>")
+@bot.command(pass_context=True, description="!twitNNR <tweets to generate (<10)> <temperature (<4.0)>")
 @asyncio.coroutine
 def twitNNR( ctx, *args ):
 	"""Anyone can use the trained model to generate tweets. """
