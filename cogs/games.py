@@ -5,15 +5,74 @@ import asyncio
 from random import randint, choice
 
 finp = open( "trivia.txt", "r" )
+storyLoader = open( "stories.txt", "r" )
 
-rouletteStarted, triviaStarted = {}, {}
+rouletteStarted, triviaStarted, stories = {}, {}, {}
 bulletPos, chamberPos, triviaQuestion = 0, 0, 0
 questions = eval( finp.read() )
+stories = eval( storyLoader.read() ) #reading a dict of strings so shouldn't have holes
 finp.close()
+storyLoader.close()
+
+storySaver = open( "stories.txt", "w" )
 
 class Games():
 	def __init__(self, bot):
 		self.bot = bot
+		
+	#[------Storytime------]
+	#TODO: move to a text file so it's not deleted when bot goes offline
+	@commands.command(pass_context=True)
+	@asyncio.coroutine
+	def story( self, ctx, *args ):
+		"""Write a story with your friends."""
+		global stories
+		
+		#Generating new story if none exists
+		try:
+			story = stories[ctx.message.server.id]
+		except KeyError:
+			yield from self.bot.send_message( ctx.message.channel, "No story detected. Generating a blank one." )
+			stories[ctx.message.server.id] = ""
+			return
+		
+		#Getting an argument, helping if none
+		try:
+			command = args[0]
+		except IndexError: #if just !story
+			yield from self.bot.send_message( ctx.message.channel, "No arguments provided. Try 'read', 'add', or 'clear'." )
+			return
+			
+		#Read argument
+		if command == 'read':
+			yield from self.bot.send_message( ctx.message.channel, "Story:\n" + stories[ctx.message.server.id] )
+			return
+		#Add argument
+		elif command == 'add':
+			#combine the rest of the arguments (probably a better way somewhere)
+			added = ""
+			for i in range( len(args) ):
+				if i == 0:
+					continue
+				added += args[i] + " "
+				
+			stories[ctx.message.server.id] += ( "\n" + added )
+			yield from self.bot.send_message( ctx.message.channel, "Added to story. \n" + stories[ctx.message.server.id] )
+			storySaver.seek(0)
+			storySaver.truncate()
+			storySaver.write( str( stories ) )
+			return
+		#Clear the story
+		elif command == 'clear':
+			stories[ctx.message.server.id] = ""
+			yield from self.bot.send_message( ctx.message.channel, "Cleared the story." )
+			storySaver.seek(0)
+			storySaver.truncate()
+			storySaver.write( str( stories ) )
+			return
+		else:
+			yield from self.bot.send_message( ctx.message.channel, "Invalid argument. Try 'read', 'add', or 'clear'." )
+				
 		
 	#[------Spin the Bottle-----]
 	@commands.command(pass_context=True)
@@ -29,6 +88,8 @@ class Games():
 	#[-----Trivia-----]
 	#Checking for answer
 	def check_answer( self, answer ):
+		if answer.author.name is 'PazBot':
+			return False
 		return questions[triviaQuestion] in answer.content.lower()
 	
 	#Main trivia
