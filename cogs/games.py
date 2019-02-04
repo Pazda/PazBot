@@ -10,7 +10,11 @@ storyLoader = open( "stories.txt", "r" )
 rouletteStarted, triviaStarted, stories = {}, {}, {}
 bulletPos, chamberPos, triviaQuestion = 0, 0, 0
 questions = eval( finp.read() )
-stories = eval( storyLoader.read() ) #reading a dict of strings so shouldn't have holes
+stories = storyLoader.read() #reading a dict of strings so shouldn't have holes
+if stories == "":
+	stories = {}
+else:
+	stories = eval( stories )
 finp.close()
 storyLoader.close()
 
