@@ -56,8 +56,14 @@ class Games():
 					continue
 				added += args[i] + " "
 				
-			stories[ctx.message.server.id] += ( "\n" + added )
-			yield from self.bot.send_message( ctx.message.channel, "Added to story. \n" + stories[ctx.message.server.id] )
+			added = added[:-1]
+			#Punctuation
+			if not added.endswith('.') and not added.endswith('?') and not added.endswith('!'):
+				added += "."
+			added += " "
+				
+			stories[ctx.message.server.id] += ( added )
+			yield from self.bot.send_message( ctx.message.channel, "Added to story. \n\n" + stories[ctx.message.server.id] )
 			storySaver.seek(0)
 			storySaver.truncate()
 			storySaver.write( str( stories ) )
