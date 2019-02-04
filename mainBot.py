@@ -7,7 +7,7 @@ import asyncio
 from tweetMaker import runTrain
 import os, sys
 
-startup_extensions = [ "cogs.games" ]
+startup_extensions = [ "cogs.games", "cogs.admin" ]
 TOKEN = ''
 bot = commands.Bot( command_prefix = '!' )
 generatorInUse = False
