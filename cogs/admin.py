@@ -32,7 +32,7 @@ class Admin():
 				yield from self.bot.delete_message( message )
 				i += 1
 				
-		yield from self.bot.send_message( ctx.message.channel, "Wiped " + amount + " messages." )
+		yield from self.bot.send_message( ctx.message.channel, "Wiped " + str(amount) + " messages." )
 		
 		
 def setup(bot):
